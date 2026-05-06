@@ -1,26 +1,27 @@
 backend:
   name: git-gateway
-  branch: main # 또는 master
+  branch: main # 브랜치명이 master라면 master로 수정
 
-media_folder: "images/uploads" # 사진 저장 경로
+media_folder: "images/uploads"
 public_folder: "/images/uploads"
 
 collections:
   - name: "gallery"
-    label: "갤러리 관리"
-    folder: "content/gallery" # 게시물 데이터가 저장될 폴더
-    create: true # 추가 기능 활성화
-    delete: true # 삭제 기능 활성화
-    extension: json # 데이터를 JSON으로 저장 (JS에서 불러오기 쉬움)
+    label: "이미지 작업물 관리"
+    folder: "content/gallery"
+    create: true
+    delete: true
+    extension: json
     fields:
       - { label: "제목", name: "title", widget: "string" }
-      - { label: "작업물 사진", name: "image", widget: "image" }
+      - { label: "이미지 업로드", name: "image", widget: "image" }
+
   - name: "videos"
-    label: "동영상 관리"
+    label: "동영상 작업물 관리"
     folder: "content/videos"
     create: true
     delete: true
     extension: json
     fields:
       - { label: "영상 제목", name: "title", widget: "string" }
-      - { label: "유튜브 링크", name: "url", widget: "string", hint: "유튜브 전체 주소를 입력하세요." }
+      - { label: "유튜브 전체 주소", name: "url", widget: "string" }
