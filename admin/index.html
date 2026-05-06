@@ -1,14 +1,33 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Content Manager</title>
-    <!-- 1. Netlify Identity 위젯 (인증용) -->
-    <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Content Manager</title>
+  <!-- 네트리파이 아이덴티티 스크립트 -->
+  <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
 </head>
 <body>
-    <!-- 2. Decap CMS 스크립트 (관리자 UI용) -->
-    <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
+  <!-- Decap CMS 스크립트 -->
+  <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
+
+  <script>
+    // 위젯이 로드된 후 실행
+    if (window.netlifyIdentity) {
+      // 자동 감지가 실패하므로 본인의 사이트 주소를 직접 입력하여 강제 초기화합니다.
+      // [중요] 아래 URL을 본인의 실제 네트리파이 배포 주소로 수정하세요.
+      window.netlifyIdentity.init({
+        url: "https://본인의-사이트-이름.netlify.app"
+      });
+
+      window.netlifyIdentity.on("init", user => {
+        if (!user) {
+          window.netlifyIdentity.on("login", () => {
+            document.location.href = "/admin/";
+          });
+        }
+      });
+    }
+  </script>
 </body>
 </html>
