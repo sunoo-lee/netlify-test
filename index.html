@@ -28,6 +28,44 @@
             border-radius: 5px;
         }
         .gallery-item h3 { margin: 10px 0 5px; font-size: 1.1rem; }
+
+        .video-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.video-item {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+}
+
+.video-thumb {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.play-icon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0,0,0,0.6);
+    color: white;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+}
     </style>
 </head>
 <body>
@@ -39,6 +77,56 @@
     <div id="gallery" class="gallery-container">
         <p id="loading">데이터를 불러오는 중입니다...</p>
     </div>
+
+    <!-- 동영상 갤러리가 들어갈 위치 -->
+<h2>유튜브 작업물</h2>
+<div id="video-grid" class="video-grid">
+    <p>영상 데이터를 불러오는 중입니다...</p>
+</div>
+
+<script>
+    // 유튜브 URL에서 ID를 추출하는 함수
+    function getYoutubeId(url) {
+        const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+        const match = url.match(regExp);
+        return (match && match[2].length === 11) ? match[2] : null;
+    }
+
+    async function fetchVideos() {
+        const videoGrid = document.getElementById('video-grid');
+        
+        try {
+            const response = await fetch('/data/all-videos.json');
+            if (!response.ok) throw new Error();
+            const data = await response.json();
+
+            if (data.length === 0) {
+                videoGrid.innerHTML = '<p>등록된 영상이 없습니다.</p>';
+                return;
+            }
+
+            videoGrid.innerHTML = data.map(video => {
+                const videoId = getYoutubeId(video.url);
+                const thumbUrl = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
+
+                return `
+                    <a href="${video.url}" target="_blank" class="video-item">
+                        <div class="video-thumb" style="background-image: url('${thumbUrl}');">
+                            <div class="play-icon">▶</div>
+                        </div>
+                        <p class="video-title">${video.title}</p>
+                    </a>
+                `;
+            }).join('');
+
+        } catch (e) {
+            videoGrid.innerHTML = '<p>영상 데이터를 불러올 수 없습니다.</p>';
+        }
+    }
+
+    // 기존 fetchGallery()와 함께 실행
+    fetchVideos();
+</script>
 
     <script>
         // --- 설정 부분 (본인의 정보로 수정하세요) ---
