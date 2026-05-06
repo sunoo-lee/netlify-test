@@ -2,22 +2,27 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>아트머그 커스텀 갤러리</title>
-    <style>
-        .gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; }
-        .gallery img { width: 100%; height: auto; border-radius: 8px; }
-    </style>
+    <title>작가 포트폴리오 관리</title>
+    <!-- 1. Netlify Identity 위젯 스크립트 (필수) -->
+    <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
 </head>
 <body>
-    <h1>작가 포트폴리오</h1>
-    <div id="gallery" class="gallery">
-        </div>
+    <h1>이미지 갤러리 테스트</h1>
+    <div id="gallery">
+        <!-- 이미지가 출력될 공간 -->
+    </div>
 
     <script>
-        // 간단한 테스트 로직: 특정 경로의 JSON 파일들을 읽어와 이미지를 뿌림
-        // 실제 운영시는 깃허브 API나 빌드 도구를 쓰지만, 
-        // 테스트 시에는 수동으로 images/uploads 폴더를 확인하게 안내해도 됩니다.
-        console.log("Netlify 배포 후 Identity 설정을 완료해야 관리자 로그인이 가능합니다.");
+        // 2. 로그인/로그아웃 이벤트 처리 (로그인 성공 시 admin으로 이동)
+        if (window.netlifyIdentity) {
+            window.netlifyIdentity.on("init", user => {
+                if (!user) {
+                    window.netlifyIdentity.on("login", () => {
+                        document.location.href = "/admin/";
+                    });
+                }
+            });
+        }
     </script>
 </body>
 </html>
