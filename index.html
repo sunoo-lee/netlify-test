@@ -3,194 +3,129 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>아트머그 커스텀 테스트 페이지</title>
+    <title>Portfolio - Artmug Custom</title>
     <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
     <style>
-        /* 간단한 갤러리 레이아웃 */
-        body { font-family: sans-serif; padding: 20px; background-color: #f4f4f4; }
+        /* 기본 스타일 */
+        body { font-family: 'Pretendard', sans-serif; margin: 0; padding: 20px; line-height: 1.6; }
+        h2 { border-left: 5px solid #333; padding-left: 10px; margin: 40px 0 20px; }
+
+        /* 이미지 갤러리 그리드 */
         .gallery-container {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
             gap: 20px;
-            margin-top: 30px;
         }
-        .gallery-item {
-            background: white;
-            padding: 10px;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            text-align: center;
-        }
-        .gallery-item img {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-            border-radius: 5px;
-        }
-        .gallery-item h3 { margin: 10px 0 5px; font-size: 1.1rem; }
+        .gallery-item { background: #fff; border: 1px solid #ddd; padding: 10px; border-radius: 8px; }
+        .gallery-item img { width: 100%; height: auto; border-radius: 4px; display: block; }
+        .gallery-item h3 { font-size: 1rem; margin-top: 10px; text-align: center; }
 
+        /* 비디오 그리드 (사용자 제공 스타일 기반) */
         .video-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 20px;
-}
-
-.video-item {
-    text-decoration: none;
-    color: inherit;
-    display: block;
-}
-
-.video-thumb {
-    width: 100%;
-    aspect-ratio: 16 / 9;
-    background-size: cover;
-    background-position: center;
-    position: relative;
-    border-radius: 8px;
-    overflow: hidden;
-}
-
-.play-icon {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: rgba(0,0,0,0.6);
-    color: white;
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 20px;
-}
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        .video-item { text-decoration: none; color: #333; display: block; transition: transform 0.2s; }
+        .video-item:hover { transform: translateY(-5px); }
+        .video-thumb {
+            width: 100%;
+            aspect-ratio: 16/9;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            border-radius: 8px;
+            overflow: hidden;
+            background-color: #000;
+        }
+        .play-icon {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0,0,0,0.7);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+        .video-title { margin-top: 10px; font-weight: bold; font-size: 0.95rem; }
     </style>
 </head>
 <body>
 
-    <h1>나의 커미션 작업물 목록</h1>
-    <hr>
+    <h2>작업물 갤러리</h2>
+    <div id="gallery" class="gallery-container">로딩 중...</div>
 
-    <!-- 이미지가 출력될 공간 -->
-    <div id="gallery" class="gallery-container">
-        <p id="loading">데이터를 불러오는 중입니다...</p>
-    </div>
-
-    <!-- 동영상 갤러리가 들어갈 위치 -->
-<h2>유튜브 작업물</h2>
-<div id="video-grid" class="video-grid">
-    <p>영상 데이터를 불러오는 중입니다...</p>
-</div>
-
-<script>
-    // 유튜브 URL에서 ID를 추출하는 함수
-    function getYoutubeId(url) {
-        const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
-        const match = url.match(regExp);
-        return (match && match[2].length === 11) ? match[2] : null;
-    }
-
-    async function fetchVideos() {
-        const videoGrid = document.getElementById('video-grid');
-        
-        try {
-            const response = await fetch('/data/all-videos.json');
-            if (!response.ok) throw new Error();
-            const data = await response.json();
-
-            if (data.length === 0) {
-                videoGrid.innerHTML = '<p>등록된 영상이 없습니다.</p>';
-                return;
-            }
-
-            videoGrid.innerHTML = data.map(video => {
-                const videoId = getYoutubeId(video.url);
-                const thumbUrl = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
-
-                return `
-                    <a href="${video.url}" target="_blank" class="video-item">
-                        <div class="video-thumb" style="background-image: url('${thumbUrl}');">
-                            <div class="play-icon">▶</div>
-                        </div>
-                        <p class="video-title">${video.title}</p>
-                    </a>
-                `;
-            }).join('');
-
-        } catch (e) {
-            videoGrid.innerHTML = '<p>영상 데이터를 불러올 수 없습니다.</p>';
-        }
-    }
-
-    // 기존 fetchGallery()와 함께 실행
-    fetchVideos();
-</script>
+    <h2>유튜브 작업물</h2>
+    <div id="video-grid" class="video-grid">로딩 중...</div>
 
     <script>
-        // --- 설정 부분 (본인의 정보로 수정하세요) ---
-        const GITHUB_USERNAME = 'sunoo-lee'; 
+        // [수정 필요] 본인의 정보 입력
+        const GITHUB_USER = 'sunoo-lee'; 
         const REPO_NAME = 'netlify-test';
-        const DATA_FOLDER = 'content/gallery'; // config.yml에 설정한 folder 경로
-        // ------------------------------------------
 
-        async function fetchGallery() {
-            const galleryElement = document.getElementById('gallery');
-            const loadingElement = document.getElementById('loading');
+        // 유튜브 ID 추출 함수
+        function getYoutubeId(url) {
+            const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+            const match = url.match(regExp);
+            return (match && match[2].length === 11) ? match[2] : null;
+        }
 
+        // 데이터 로드 함수
+        async function loadContent(folder, targetId, isVideo = false) {
+            const container = document.getElementById(targetId);
             try {
-                // 1. GitHub API를 통해 폴더 내 파일 목록 가져오기
-                const response = await fetch(`https://api.github.com/repos/${GITHUB_USERNAME}/${REPO_NAME}/contents/${DATA_FOLDER}`);
-                
-                if (!response.ok) throw new Error('파일 목록을 불러오지 못했습니다.');
+                const response = await fetch(`https://api.github.com/repos/${GITHUB_USER}/${REPO_NAME}/contents/content/${folder}`);
+                if (!response.ok) throw new Error('데이터 없음');
                 
                 const files = await response.json();
-
-                // 2. 각 JSON 파일의 내용을 가져와서 화면에 추가
-                // JSON 파일만 필터링 (확장자 체크)
-                const jsonFiles = files.filter(file => file.name.endsWith('.json'));
-
-                if (jsonFiles.length === 0) {
-                    galleryElement.innerHTML = '<p>등록된 이미지가 없습니다.</p>';
-                    return;
-                }
-
-                // 기존 로딩 메시지 삭제
-                loadingElement.remove();
+                const jsonFiles = files.filter(f => f.name.endsWith('.json'));
+                
+                container.innerHTML = ''; // 로딩 메시지 제거
 
                 for (const file of jsonFiles) {
-                    const contentResponse = await fetch(file.download_url);
-                    const item = await contentResponse.json();
+                    const dataRes = await fetch(file.download_url);
+                    const data = await dataRes.json();
 
-                    // HTML 요소 생성
-                    const itemDiv = document.createElement('div');
-                    itemDiv.className = 'gallery-item';
-                    
-                    itemDiv.innerHTML = `
-                        <img src="${item.image}" alt="${item.title}">
-                        <h3>${item.title}</h3>
-                    `;
-                    
-                    galleryElement.appendChild(itemDiv);
+                    if (isVideo) {
+                        const vId = getYoutubeId(data.url);
+                        const thumb = `https://img.youtube.com/vi/${vId}/maxresdefault.jpg`;
+                        container.innerHTML += `
+                            <a href="${data.url}" target="_blank" class="video-item">
+                                <div class="video-thumb" style="background-image: url('${thumb}');">
+                                    <div class="play-icon">▶</div>
+                                </div>
+                                <p class="video-title">${data.title}</p>
+                            </a>`;
+                    } else {
+                        container.innerHTML += `
+                            <div class="gallery-item">
+                                <img src="${data.image}" alt="${data.title}">
+                                <h3>${data.title}</h3>
+                            </div>`;
+                    }
                 }
-
-            } catch (error) {
-                console.error(error);
-                galleryElement.innerHTML = '<p>데이터를 불러오는 중 오류가 발생했습니다.</p>';
+            } catch (e) {
+                container.innerHTML = '<p>데이터가 비어있거나 저장소 설정이 잘못되었습니다.</p>';
             }
         }
 
-        // 페이지 로드 시 실행
-        fetchGallery();
+        // 실행
+        window.onload = () => {
+            loadContent('gallery', 'gallery');
+            loadContent('videos', 'video-grid', true);
+        };
 
-        // 넷플리파이 Identity 로그아웃 후 리다이렉트 처리 (선택사항)
+        // Netlify Identity (초대 수락용)
         if (window.netlifyIdentity) {
             window.netlifyIdentity.on("init", user => {
                 if (!user) {
-                    window.netlifyIdentity.on("login", () => {
-                        document.location.href = "/admin/";
-                    });
+                    window.netlifyIdentity.on("login", () => { document.location.href = "/admin/"; });
                 }
             });
         }
