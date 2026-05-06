@@ -15,3 +15,12 @@ collections:
     fields:
       - { label: "제목", name: "title", widget: "string" }
       - { label: "작업물 사진", name: "image", widget: "image" }
+  - name: "videos"
+    label: "동영상 관리"
+    folder: "content/videos"
+    create: true
+    delete: true
+    extension: json
+    fields:
+      - { label: "영상 제목", name: "title", widget: "string" }
+      - { label: "유튜브 링크", name: "url", widget: "string", hint: "유튜브 전체 주소를 입력하세요." }
