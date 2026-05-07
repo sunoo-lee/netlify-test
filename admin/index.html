@@ -12,12 +12,12 @@
   <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
 
   <script>
+    CMS.registerPreviewStyle("admin.css");
     // 위젯이 로드된 후 실행
     if (window.netlifyIdentity) {
-      // 자동 감지가 실패하므로 본인의 사이트 주소를 직접 입력하여 강제 초기화합니다.
-      // [중요] 아래 URL을 본인의 실제 네트리파이 배포 주소로 수정하세요.
+      
       window.netlifyIdentity.init({
-        url: "https://본인의-사이트-이름.netlify.app"
+        url: "https://phenomenal-sunshine-a94294.netlify.app/"
       });
 
       window.netlifyIdentity.on("init", user => {
