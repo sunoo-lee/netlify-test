@@ -42,38 +42,37 @@
         .video-title { font-weight: 800; font-size: 0.95rem; margin: 0; text-align: center; }
         
         /* 📌 포트폴리오 (개인작 이미지 갤러리) - 이미지 그리드 3열 설정 */
-        /* 전체 컨테이너 */
-.img-grid-container {
-    display: flex;
-    justify-content: space-between; /* 열 사이 간격 균등 배분 */
-    align-items: flex-start;
-    gap: 15px; /* 열 사이 간격 */
-    width: 100%;
-}
+        .img-grid-container {
+            display: flex;
+            justify-content: space-between; /* 열 사이 간격 균등 배분 */
+            align-items: flex-start;
+            gap: 15px; /* 열 사이 간격 */
+            width: 100%;
+        }
 
-/* 각각의 세로 열 */
-.grid-column {
-    flex: 1; /* 3개의 열이 동일한 폭을 가짐 */
-    display: flex;
-    flex-direction: column;
-    gap: 15px; /* 이미지 사이의 상하 간격 */
-}
+        /* 각각의 세로 열 */
+        .grid-column {
+            flex: 1; /* 3개의 열이 동일한 폭을 가짐 */
+            display: flex;
+            flex-direction: column;
+            gap: 15px; /* 이미지 사이의 상하 간격 */
+        }
 
-/* 이미지 아이템 */
-.img-item {
-    width: 100%;
-    border-radius: 12px;
-    overflow: hidden;
-    background: #f4f4f4;
-}
+        /* 이미지 아이템 */
+        .img-item {
+            width: 100%;
+            border-radius: 12px;
+            overflow: hidden;
+            background: #f4f4f4;
+        }
 
-.img-item img {
-    width: 100%;
-    height: auto;
-    display: block;
-    transition: 0.3s;
-    cursor: pointer;
-}
+        .img-item img {
+            width: 100%;
+            height: auto;
+            display: block;
+            transition: 0.3s;
+            cursor: pointer;
+        }
         .img-item:hover img { transform: scale(1.03); } /* 살짝 확대되는 효과 */
         
         .loading-msg { text-align: center; color: #888; font-weight: 700; padding: 20px; width: 100%; grid-column: 1 / -1; }
@@ -347,41 +346,62 @@
             const files = await listRes.json();
             const jsonFiles = files.filter(f => f.name.endsWith('.json'));
             
-            root.innerHTML = '';
+            root.innerHTML = ''; 
 
             if (!isVideo) {
-                const col1 = document.createElement('div');
-                const col2 = document.createElement('div');
-                const col3 = document.createElement('div');
-                col1.className = col2.className = col3.className = 'grid-column';
-                root.appendChild(col1);
-                root.appendChild(col2);
-                root.appendChild(col3);
+                // 3개의 컬럼 생성
+                const cols = [
+                    document.createElement('div'),
+                    document.createElement('div'),
+                    document.createElement('div')
+                ];
+                cols.forEach(col => {
+                    col.className = 'grid-column';
+                    root.appendChild(col);
+                });
 
-                const cols = [col1, col2, col3];
-
-                for (let i = 0; i < jsonFiles.length; i++) {
-                    const dataRes = await fetch(jsonFiles[i].download_url);
+                // 이미지를 하나씩 순차적으로 로드하여 배치
+                for (const f of jsonFiles) {
+                    const dataRes = await fetch(f.download_url);
                     const item = await dataRes.json();
                     
                     const githubRawBase = `https://raw.githubusercontent.com/${USER_NAME}/${REPO_NAME}/main`;
                     const imageSrc = item.image.startsWith('http') ? item.image : `${githubRawBase}${item.image}`;
 
-                    const itemHtml = `
-                        <div class="img-item">
-                            <a href="javascript:void(0);" onclick="openImageViewer('${imageSrc}', '${item.title}')" style="display:block;">
-                                <img src="${imageSrc}" alt="${item.title}">
-                            </a>
-                        </div>`;
+                    // 이미지 요소 생성
+                    const imgItem = document.createElement('div');
+                    imgItem.className = 'img-item';
+                    imgItem.innerHTML = `
+                        <a href="javascript:void(0);" onclick="openImageViewer('${imageSrc}', '${item.title}')" style="display:block;">
+                            <img src="${imageSrc}" alt="${item.title}" style="width:100%; display:block;">
+                        </a>`;
 
-                    cols[i % 3].innerHTML += itemHtml;
+                    const imgTag = imgItem.querySelector('img');
+
+                    // [핵심] 이미지가 로드되어 높이가 계산된 후 가장 짧은 컬럼에 배치
+                    await new Promise((resolve) => {
+                        imgTag.onload = () => {
+                            // 현재 자식 요소들의 높이 합이 가장 작은 컬럼 찾기
+                            const shortestCol = cols.reduce((prev, curr) => 
+                                prev.offsetHeight <= curr.offsetHeight ? prev : curr
+                            );
+                            shortestCol.appendChild(imgItem);
+                            resolve();
+                        };
+                        
+                        // 이미지 로드 실패 시에도 다음 이미지로 넘어가기 위한 처리
+                        imgTag.onerror = resolve;
+
+                        // 캐시된 이미지 대응
+                        if (imgTag.complete) imgTag.onload();
+                    });
                 }
             } else {
+                // 비디오 갤러리 로직 (기존 유지)
                 for (const f of jsonFiles) {
                     const dataRes = await fetch(f.download_url);
                     const item = await dataRes.json();
                     const vId = getVid(item.url);
-                    
                     const thumbUrl = `https://img.youtube.com/vi/${vId}/maxresdefault.jpg`;
 
                     root.innerHTML += `
