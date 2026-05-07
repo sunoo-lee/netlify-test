@@ -258,25 +258,35 @@
     // 2. 초기화 함수
     function resetForm() { if(confirm('작성 중인 내용을 모두 지우시겠습니까?')) { document.getElementById('orderForm').reset(); } }
 
-    // 3. 상하 스크롤 이동 기능 (넷틀리파이 + 아트머그 통합)
+    // 3. 상하 스크롤 이동 기능 (아트머그 수신기 맞춤형)
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function (e) {
-            e.preventDefault(); // 기본 뚝뚝 끊기는 이동 방지
+            e.preventDefault();
+            
             const targetId = this.getAttribute('href').substring(1);
-            let offset = 0;
+            let absoluteOffset = 0;
             
             if (targetId !== 'top') {
                 const targetElement = document.getElementById(targetId);
-                if (targetElement) { 
-                    offset = targetElement.getBoundingClientRect().top + window.scrollY - 20; 
+                if (targetElement) {
+                    // 수신기(Artmug)가 iframe의 시작점부터의 거리를 원하므로
+                    // getBoundingClientRect 대신 offsetTop을 사용하는 것이 가장 정확합니다.
+                    absoluteOffset = targetElement.offsetTop - 20; 
                 }
             }
-            
-            // 🌟 [추가된 부분] 넷틀리파이 일반 화면에서도 부드럽게 스크롤 이동!!
-            window.scrollTo({ top: offset, behavior: 'smooth' });
 
-            // 아트머그 화면일 경우 부모 창으로 이동 신호 발사
-            window.parent.postMessage({ type: 'scrollTo', offset: offset }, '*');
+            // 넷플리파이 단독 페이지로 볼 때의 동작
+            window.scrollTo({
+                top: absoluteOffset,
+                behavior: 'smooth'
+            });
+
+            // 아트머그 부모 창으로 신호 전송
+            // 부모 창의 'message' 리스너가 이 데이터를 받아 window.scrollTo를 실행합니다.
+            window.parent.postMessage({
+                type: 'scrollTo',
+                offset: absoluteOffset
+            }, '*');
         });
     });
 </script>
