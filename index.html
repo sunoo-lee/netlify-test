@@ -266,23 +266,26 @@
             const targetId = this.getAttribute('href').substring(1);
             let absoluteOffset = 0;
             
-            if (targetId !== 'top') {
+            if (targetId === 'top') {
+                absoluteOffset = 0;
+            } else {
                 const targetElement = document.getElementById(targetId);
                 if (targetElement) {
-                    // 수신기(Artmug)가 iframe의 시작점부터의 거리를 원하므로
-                    // getBoundingClientRect 대신 offsetTop을 사용하는 것이 가장 정확합니다.
-                    absoluteOffset = targetElement.offsetTop - 20; 
+                    // 부모 요소의 position 설정과 상관없이 
+                    // iframe 문서 최상단으로부터의 절대 거리를 계산합니다.
+                    const rect = targetElement.getBoundingClientRect();
+                    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                    absoluteOffset = rect.top + scrollTop - 20; // 20px 여백
                 }
             }
 
-            // 넷플리파이 단독 페이지로 볼 때의 동작
-            window.scrollTo({
-                top: absoluteOffset,
-                behavior: 'smooth'
-            });
+            // 로그 확인용 (F12 콘솔에서 확인 가능)
+            console.log("보내는 좌표:", absoluteOffset);
+
+            // 넷플리파이 단독 페이지 동작
+            window.scrollTo({ top: absoluteOffset, behavior: 'smooth' });
 
             // 아트머그 부모 창으로 신호 전송
-            // 부모 창의 'message' 리스너가 이 데이터를 받아 window.scrollTo를 실행합니다.
             window.parent.postMessage({
                 type: 'scrollTo',
                 offset: absoluteOffset
