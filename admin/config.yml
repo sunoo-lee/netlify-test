@@ -2,26 +2,25 @@ backend:
   name: git-gateway
   branch: main # 브랜치명이 master라면 master로 수정
 
+locale: 'ko'
+
 media_folder: "images/uploads"
 public_folder: "/images/uploads"
 
 collections:
   - name: "gallery"
-    label: "이미지 작업물 관리"
+    label: "일러스트 관리" # CMS 왼쪽 메뉴에 표시될 이름
     folder: "content/gallery"
     create: true
-    delete: true
-    extension: json
+    slug: "{{slug}}"
     fields:
       - { label: "제목", name: "title", widget: "string" }
-      - { label: "이미지 업로드", name: "image", widget: "image" }
+      - { label: "작업물 이미지", name: "image", widget: "image" }
 
   - name: "videos"
-    label: "동영상 작업물 관리"
+    label: "영상 관리"
     folder: "content/videos"
     create: true
-    delete: true
-    extension: json
     fields:
       - { label: "영상 제목", name: "title", widget: "string" }
-      - { label: "유튜브 전체 주소", name: "url", widget: "string" }
+      - { label: "유튜브 링크", name: "url", widget: "string" }
