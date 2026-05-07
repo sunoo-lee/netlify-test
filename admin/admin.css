@@ -1,0 +1,20 @@
+/* 관리자 페이지 상단 바 색상 변경 */
+.nc-appBar-appBar {
+  background-color: #5e35b1 !important; /* 작가님 메인 컬러 */
+}
+
+/* 왼쪽 메뉴 액티브 상태 색상 */
+.nc-app-sidebar-link-active {
+  color: #5e35b1 !important;
+  border-left-color: #5e35b1 !important;
+}
+
+/* 저장/발행 버튼 스타일 변경 */
+.nc-appBar-menuButton {
+  border-radius: 8px !important;
+}
+
+/* 입력 필드 폰트 설정 */
+body {
+  font-family: 'Pretendard', sans-serif !important;
+}
