@@ -12,6 +12,8 @@ collections:
     label: "일러스트 관리" # CMS 왼쪽 메뉴에 표시될 이름
     folder: "content/gallery"
     create: true
+    extension: "json"
+    format: "json"
     slug: "{{slug}}"
     fields:
       - { label: "제목", name: "title", widget: "string" }
@@ -21,6 +23,8 @@ collections:
     label: "영상 관리"
     folder: "content/videos"
     create: true
+    extension: "json"
+    format: "json"
     fields:
       - { label: "영상 제목", name: "title", widget: "string" }
       - { label: "유튜브 링크", name: "url", widget: "string" }
